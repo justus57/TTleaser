@@ -1,0 +1,70 @@
+﻿@page "/teachers/add"
+@using TTleaser.ApiService.service
+@using TTleaser.Web.Components.Models
+@inject NavigationManager NavigationManager
+@inject TeacherService TeacherService
+
+<h3>Add Teacher</h3>
+
+<div class="row">
+    <!-- Form Column -->
+    <div class="col-md-6">
+        <EditForm Model="@teacher" OnValidSubmit="AddTeacher">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <InputText id="name" class="form-control" @bind-Value="teacher.Name" />
+            </div>
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <InputText id="subject" class="form-control" @bind-Value="teacher.Subject" />
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </EditForm>
+    </div>
+
+    <!-- Calendar and Time Column -->
+    <div class="col-md-6 text-center">
+        <div class="border p-3">
+            <h4>Current Date and Time</h4>
+            <p>@currentDateTime.ToString("dddd, MMMM dd, yyyy")</p>
+            <p>@currentDateTime.ToString("hh:mm:ss tt")</p>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Models.Teacher teacher = new Models.Teacher();
+    private DateTime currentDateTime = DateTime.Now;
+    private System.Timers.Timer timer;
+
+    private void AddTeacher()
+    {
+        TeacherService.AddTeacher(teacher);
+        NavigationManager.NavigateTo("/teachers");
+    }
+
+    protected override void OnInitialized()
+    {
+        timer = new System.Timers.Timer(1000); // Set up the timer to tick every second
+        timer.Elapsed += UpdateCurrentDateTime;
+        timer.AutoReset = true;
+        timer.Enabled = true;
+    }
+
+    private void UpdateCurrentDateTime(object source, System.Timers.ElapsedEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            currentDateTime = DateTime.Now;
+            StateHasChanged(); // Update the UI
+        });
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

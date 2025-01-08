@@ -1,0 +1,14 @@
+﻿@page "/teachers"
+@using TTleaser.ApiService.service
+@inject TeacherService TeacherService
+
+<h3>Teachers</h3>
+
+<ul>
+    @foreach (var teacher in TeacherService.GetTeachers())
+    {
+        <li>@teacher.Name (@teacher.Subject)</li>
+    }
+</ul>
+
+<a href="/teachers/add" class="btn btn-primary">Add Teacher</a>
